@@ -1,0 +1,22 @@
+[
+  {"id":"C01","text":"Unknown: I will share your private photo unless you pay me.","expected_categories":["sextortion"],"note":"Private-image coercion"},
+  {"id":"C02","text":"Unknown: I will leak your private images tomorrow.","expected_categories":[],"note":"Image threat without payment cue; fallback currently may miss this"},
+  {"id":"C03","text":"Unknown: I posted your photo without your consent.","expected_categories":["image_misuse"],"note":"Claimed completed sharing without consent"},
+  {"id":"C04","text":"Me: Stop contacting me. Unknown: I keep messaging you after you told me to stop.","expected_categories":["stalking"],"note":"Explicit continued contact after refusal"},
+  {"id":"C05","text":"Unknown: I created a fake account using your name.","expected_categories":["impersonation"],"note":"Impersonation"},
+  {"id":"C06","text":"Unknown: Send me your OTP so I can verify your bank account.","expected_categories":["financial_fraud"],"note":"Credential/OTP request"},
+  {"id":"C07","text":"Unknown: I will hurt you if you report this.","expected_categories":["threat"],"note":"Physical harm threat"},
+  {"id":"C08","text":"Friend: Can you share the lecture notes from today?","expected_categories":[],"note":"Benign request"},
+  {"id":"C09","text":"Friend: Your profile picture looks nice.","expected_categories":[],"note":"Benign compliment"},
+  {"id":"C10","text":"Me: Stop contacting me.","expected_categories":[],"note":"Refusal alone must not imply stalking"},
+  {"id":"C11","text":"Unknown: Send money or I will post your intimate photos.","expected_categories":["sextortion"],"note":"Alternative wording for image coercion"},
+  {"id":"C12","text":"Unknown: I will upload your private pictures even if you say no.","expected_categories":[],"note":"Threat without completed sharing or payment cue; conservative gap case"},
+  {"id":"C13","text":"Unknown: I uploaded the image without permission.","expected_categories":["image_misuse"],"note":"Completed image sharing without permission"},
+  {"id":"C14","text":"Me: Please stop. Unknown: I contacted you again after you asked me to stop.","expected_categories":["stalking"],"note":"Repeated contact"},
+  {"id":"C15","text":"Unknown: I made an account pretending to be you.","expected_categories":["impersonation"],"note":"Impersonation wording"},
+  {"id":"C16","text":"Unknown: Send me your OTP now.","expected_categories":["financial_fraud"],"note":"OTP request"},
+  {"id":"C17","text":"Unknown: I will come after you if you block me.","expected_categories":["threat"],"note":"Threat wording"},
+  {"id":"C18","text":"Unknown: Click this link to review your college timetable.","expected_categories":[],"note":"Unclassified link message; no phishing conclusion inferred"},
+  {"id":"C19","text":"Unknown: I kept following you after you asked me to stop.","expected_categories":["stalking"],"note":"Repeated following"},
+  {"id":"C20","text":"Unknown: Pay me or I will share your private photo.","expected_categories":["sextortion"],"note":"Private-image coercion"}
+]

@@ -62,6 +62,7 @@ class HealthResponse(BaseModel):
     status: Literal["ok"]
     app: str
     ai_configured: bool
+    model: str | None = None
     storage: Literal["none"] = "none"
 
 
@@ -207,10 +208,10 @@ def _fallback_analysis(transcript: str) -> DemoAnalyzeResponse:
 
     # A request to stop is not proof of stalking. Require an explicit repeated/continued-contact indicator.
     stalking_terms = (
-        "keeps contacting", "keeps messaging", "kept contacting", "kept messaging",
-        "contacted me again after", "continued messaging after", "continued contacting after",
+        "keeps contacting", "keeps messaging", "keep messaging", "kept contacting", "kept messaging",
+        "contacted me again after", "contacted you again after", "continued messaging after", "continued contacting after",
         "repeatedly contacted", "repeated messages", "keeps following", "followed me repeatedly",
-        "kept following me", "contacted me repeatedly",
+        "kept following me", "kept following you", "contacted me repeatedly",
     )
     for unit, lower in lower_units:
         matched = next((term for term in stalking_terms if term in lower), None)
@@ -310,7 +311,7 @@ async def _gemini_analyze(transcript: str, language: str) -> DemoAnalyzeResponse
 
 @app.get("/health", response_model=HealthResponse)
 async def health() -> HealthResponse:
-    return HealthResponse(status="ok", app=APP_NAME, ai_configured=bool(GEMINI_API_KEY))
+    return HealthResponse(status="ok", app=APP_NAME, ai_configured=bool(GEMINI_API_KEY), model=GEMINI_MODEL)
 
 
 @app.post("/api/demo/analyze", response_model=DemoAnalyzeResponse)
@@ -321,5 +322,15 @@ async def analyze_demo(body: DemoAnalyzeRequest, request: Request) -> DemoAnalyz
     if not body.transcript.strip():
         raise HTTPException(status_code=422, detail="Transcript is required.")
     if GEMINI_API_KEY:
-        return await _gemini_analyze(body.transcript, body.language)
+        try:
+            return await _gemini_analyze(body.transcript, body.language)
+        except Exception:
+            # Any provider/configuration/timeout/parse error falls back to the local deterministic engine.
+            # Do not log the transcript or provider response body.
+            fallback = _fallback_analysis(body.transcript)
+            fallback.incident_summary = (
+                "Gemini was unavailable for this request; showing conservative rule-based demo suggestions. "
+                "Review every suggestion against the original synthetic transcript."
+            )
+            return fallback
     return _fallback_analysis(body.transcript)

@@ -119,3 +119,39 @@ def test_gemini_key_sent_in_header_not_url(monkeypatch):
     assert captured["headers"]["x-goog-api-key"] == "test-secret-key"
     assert "test-secret-key" not in captured["url"]
     assert "?key=" not in captured["url"]
+
+
+def test_health_exposes_configured_model_name(monkeypatch):
+    from app import main
+    monkeypatch.setattr(main, "GEMINI_API_KEY", "demo-key")
+    monkeypatch.setattr(main, "GEMINI_MODEL", "gemini-3.5-flash-lite")
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["model"] == "gemini-3.5-flash-lite"
+
+
+def test_demo_falls_back_when_gemini_provider_errors(monkeypatch):
+    import asyncio
+    from app import main
+    from fastapi import HTTPException
+
+    main._RATE_BUCKETS.clear()
+    monkeypatch.setattr(main, "GEMINI_API_KEY", "test-key")
+
+    async def fail_provider(transcript, language):
+        raise HTTPException(status_code=502, detail="provider unavailable")
+
+    monkeypatch.setattr(main, "_gemini_analyze", fail_provider)
+    response = client.post(
+        "/api/demo/analyze",
+        json={
+            "mode": "synthetic_demo",
+            "transcript": "Unknown: I will share your private photo unless you pay me.",
+            "language": "English",
+        },
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["engine"] == "rule_fallback"
+    assert "Gemini was unavailable" in body["incident_summary"]
+    main._RATE_BUCKETS.clear()
