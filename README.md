@@ -1,63 +1,57 @@
-# HerNest
-your evidence.your voice.your next step
-# HerNest API — minimal backend
+# HerNest · recHERsion 2026 PS2 prototype
 
-This is the backend slice only. It intentionally has no database and never stores case files or screenshots.
+A lightweight, local-first evidence-to-action prototype for online-abuse scenarios. It is a hackathon demo, not a legal service, emergency service, or certified evidence-preservation tool.
 
-## Endpoints
+## Run locally (Windows)
 
-- `GET /health`: API status and whether the optional AI key is configured.
-- `POST /api/demo/analyze`: structured extraction for **synthetic demo transcripts only**. A small deterministic fallback works when no AI key is configured.
-
-The API bounds transcript input, applies a small in-memory sliding-window limit (default 5 requests per client per 60 seconds), has upstream timeouts, validates model output, and returns safe errors. The rate limiter is per process and is appropriate for a hackathon prototype, not a distributed production service. The endpoint has no uploaded files, accounts, case storage, or legal determination.
-
-## Run locally (Windows PowerShell)
+### 1) Frontend
 
 ```powershell
+cd frontend
+npm install
+npm test
+npm run dev
+```
+
+`npm install` runs the `postinstall` script that copies the pinned Tesseract.js worker, core variants, and English/Hindi/Telugu language files into `frontend/public/ocr`. The app has no CDN fallback for OCR. If asset setup fails, read the error rather than bypassing it. `npm install` (not `npm ci`) is used because the ZIP intentionally omits a generated lockfile.
+
+### 2) Backend (optional, synthetic demo only)
+
+In a second terminal:
+
+```powershell
+cd backend
 py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
 ```
 
-Open `http://127.0.0.1:8000/health` and `http://127.0.0.1:8000/docs`.
+Open `http://127.0.0.1:8000/health` and `http://127.0.0.1:8000/docs`. No database is needed. Without `GEMINI_API_KEY`, the endpoint uses conservative rule-based suggestions. Optional Gemini analysis is restricted in the UI to synthetic content. Never send real survivor evidence to an unpaid AI service. Do not launch the Gemini endpoint as a public consumer-facing feature until you confirm the use case is permitted by current API terms; the current terms describe the API as intended for professional/business use rather than consumer use.
 
-## Test
+## Verify
 
-```powershell
-python -m pytest -q
-```
+Frontend tests: `cd frontend && npm test`
 
-## Optional AI setup
+Backend tests: `cd backend && python -m pytest -q`
 
-Copy `.env.example` to `.env` and set `GEMINI_API_KEY` only for synthetic demo data. Load environment variables before starting Uvicorn. Never commit `.env`, and never put the key in frontend code. The key is sent to Google in the `x-goog-api-key` header, not a URL query string.
+A usability test protocol for 3–5 students is in `docs/usability-test-script.md`. It has **not** been conducted yet; fill in results only after real tests with synthetic content.
 
-The default model in this repo is `gemini-3.5-flash-lite`, based on Google's current model guide at the time of this project. Google says Gemini 2.5 Flash is still served but access is limited to users who have actively used it; the guide recommends newer models for new projects. Model availability and provider terms may change. Google's unpaid API terms advise against submitting sensitive, confidential or personal information. Therefore this endpoint must receive synthetic fictional content only, even if content is redacted.
+## Key implementation choices
 
-## Frontend request
+- Screenshot OCR is crop-first: users draw a message box, or use the experimental bubble detector and OCR candidates in batches of up to 25. OCR crops retain source-image pixel coordinates and explicit sender side.
+- Screenshot OCR results are appended, not passed through the WhatsApp text parser.
+- Guided yes/no/not-sure questions create unconfirmed fact drafts only when each Yes is linked to a source message.
+- Cases are not stored on the backend. Hashing, OCR, review, routing and PDF export run in the browser.
+- Reporting routes are selected by confirmed tags and explicit immediate-danger input. Legal sections are not auto-assigned.
+- Quick exit needs confirmation / two Escape presses and clearly notes it cannot erase external copies, browser history, downloads, or screenshots.
+- The API's in-memory rate limit is only for a single prototype process; use a shared or edge limiter before public launch.
 
-`POST http://127.0.0.1:8000/api/demo/analyze`
+## Recent MVP additions
 
-```json
-{
-  "mode": "synthetic_demo",
-  "transcript": "Friend: I will share your private photo unless you pay.\\nMe: Stop contacting me.",
-  "language": "English"
-}
-```
-
-Response includes `engine` (`rule_fallback` or `gemini`), `incident_summary`, `facts`, `suggested_next_steps`, and a disclaimer. Frontend facts remain suggestions and require source checking and user confirmation. Model output must never automatically confirm a fact or choose a legal provision.
-
-
-## Rate-limit deployment note
-
-The demo endpoint uses a small in-memory, per-process sliding-window limit (default 5 requests per 60 seconds per client address). This protects a single prototype process; it is not a distributed production abuse-control system. Before public launch, add the hosting platform's edge/API rate limiter or a shared rate-limit store, and configure trusted proxy handling intentionally.
-
-
-Before exposing Gemini integration publicly, review current provider terms for this specific product use; current Gemini API Additional Terms describe API use as for professional/business purposes, not consumer use. Keep this hackathon endpoint synthetic-demo-only unless that suitability is confirmed.
-
-
-## Current model and fallback
-
-The default model is `gemini-3.5-flash-lite`, configurable through `GEMINI_MODEL`. Google currently lists this as a stable Gemini API model and recommends it or `gemini-3.8-flash` for new projects. Check the live official model page before deployment: https://ai.google.dev/gemini-api/docs/models. `GET /health` returns the configured model name without exposing the API key.
-
-If the Gemini provider errors, times out, returns invalid JSON, or rejects a request, the endpoint falls back to the deterministic local rule engine for the same synthetic transcript. The endpoint's own rate limiter still returns HTTP 429 when the app limit is exceeded.
+- Screenshot OCR creates a cropped PNG exhibit, calculates a separate SHA-256 for the crop, assigns Exhibit A-1/A-2… numbering, and keeps the original screenshot hash and pixel region. Cropped exhibits are attached by default; full screenshots are opt-in and warned as unredacted.
+- Report text cites exhibit IDs where the source is a screenshot crop. Integrity note: fingerprints show a file has not changed since it was added here; they do not prove the screenshot is genuine.
+- Refusal marker and a deterministic timeline count only reviewed messages from the other person after the marked refusal; the report uses neutral sequence wording and no legal conclusion.
+- Protect now checklist is available on the intake and plan screens. The 1930 item appears only for a confirmed financial-fraud tag. Official references are linked in `docs/evaluation-plan.md`.
+- English/Hindi/Telugu draft strings are in `frontend/src/lib/i18n.js`, and the language choice also sets the default OCR language. Hindi/Telugu copy is machine-drafted and has **not** yet been reviewed by native speakers; have native speakers review it before public use.
+- The home walkthrough video is compressed to approximately 670 KB to avoid committing a 38 MB asset. It is still an illustrated walkthrough, not the live judge demo; record the actual app flow separately.
+- `docs/ocr-eval-samples/` contains 10 fictional screenshot samples and target ground truth. `docs/synthetic-fact-cases.json` contains 20 fictional cases. On 2026-10-25, the local fallback matched the expected category set on 20/20 curated cases; this is not general accuracy evidence. OCR comparison and 3–5 student usability sessions are not yet run.
