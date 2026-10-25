@@ -17,12 +17,12 @@ test('keeps multiline message body in the same source message', () => {
 });
 
 test('strips a trailing chat timestamp before a cropped OCR message is added', () => {
-  assert.equal(stripTrailingTime('I will share your photo 9:19 PM'), 'I will share your photo');
-  assert.equal(stripTrailingTime('You have two hours Today, 8:16 PM'), 'You have two hours');
+  assert.deepEqual(stripTrailingTime('I will share your photo 9:19 PM'), { text: 'I will share your photo', time: '9:19 PM' });
+  assert.deepEqual(stripTrailingTime('You have two hours Today, 8:16 PM'), { text: 'You have two hours', time: '8:16 PM' });
 });
 
 test('parser does not turn standalone status-bar text into sender messages when OCR is kept separate', () => {
   // This assertion documents the boundary: callers should invoke stripTrailingTime for crop OCR,
   // and should call parseChat only for .txt exports, never for raw image OCR output.
-  assert.equal(stripTrailingTime('9:41'), '');
+  assert.deepEqual(stripTrailingTime('9:41'), { text: '', time: '9:41' });
 });

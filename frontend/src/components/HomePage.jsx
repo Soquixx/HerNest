@@ -42,7 +42,7 @@ export default function HomePage({ theme, onToggleTheme, onStart }) {
 
     <section className="video-section" id="watch-demo" ref={videoRef}>
       <div className="video-copy"><span className="home-eyebrow">A QUICK TOUR</span><h2>See how HerNest works.</h2><p>A short illustrated walkthrough of the steps. It uses fictional data, not a live case recording.</p><div className="video-chapters"><span><CheckCircle2 size={14}/> Add evidence</span><span><CheckCircle2 size={14}/> Review and confirm</span><span><CheckCircle2 size={14}/> Export a report</span></div></div>
-      <div className="video-frame"><video controls preload="metadata" poster="/assets/hernest-walkthrough-poster.jpg" aria-label="HerNest walkthrough video"><source src="/assets/hernest-walkthrough.mp4" type="video/mp4"/>Your browser does not support embedded video. <a href="/assets/hernest-walkthrough.mp4">Open the walkthrough video.</a></video><div className="video-caption"><span><PlayCircle size={14}/> Illustrated walkthrough · 24 sec</span><span>On-screen guidance · fictional sample</span></div></div>
+      <div className="video-frame"><video controls preload="metadata" poster="/assets/hernest-walkthrough-poster.jpg" aria-label="HerNest walkthrough video"><source src="/assets/hernest-walkthrough.mp4" type="video/mp4"/>Your browser does not support embedded video. <a href="/assets/hernest-walkthrough.mp4">Open the walkthrough video.</a></video><div className="video-caption"><span><PlayCircle size={14}/> Illustrated walkthrough · 42 sec</span><span>On-screen guidance · fictional sample</span></div></div>
     </section>
 
     <section className="privacy-section" id="privacy">

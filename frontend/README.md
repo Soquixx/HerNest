@@ -11,8 +11,6 @@ npm run dev
 
 Open the URL printed by Vite (normally `http://127.0.0.1:5173`). `npm install` also runs `scripts/vendor-ocr-assets.mjs`, which copies the pinned Tesseract worker, all core variants, and English/Hindi/Telugu language data into `public/ocr`. This version deliberately has no CDN fallback for the OCR engine. If `postinstall` reports missing files, do not bypass it; check the pinned dependency versions and the contents of `node_modules`.
 
-For the optional synthetic-data AI demo, run the FastAPI backend separately on port 8000. If deployed elsewhere, set `VITE_API_BASE_URL` before building the frontend.
-
 ## Included
 
 - HerNest landing page, transparent logo assets, responsive layouts, and light/dark themes.
@@ -50,3 +48,12 @@ npm test
 ## Resource routing
 
 The portal and platform reporting routes are general. StopNCII appears only for a confirmed actual image-misuse tag, and eligibility still needs to be checked with StopNCII. Financial-fraud guidance appears only for a confirmed financial-fraud tag. Women’s Helpline 181 is offered for relevant confirmed abuse concerns. Emergency information for 112 appears only when the user explicitly selects immediate physical danger. The prototype does not geolocate users or invent nearby support centres.
+
+## Exhibit pack, timeline and multilingual safety guidance
+
+- Each crop OCR result is saved as a PNG data URL and hashed separately. It receives an Exhibit A-N label and retains source file name/hash, crop hash, original-image pixel box, capture method, date/time (when provided), and evidence strength.
+- The report includes cropped exhibits by default. Full original screenshots are an explicit opt-in because they may expose unrelated chats, names or notifications.
+- Refusal markers can be set on the message the user identifies as their refusal. The timeline counts only reviewed messages from the other person after that marker. It is a sequence summary, not a legal conclusion.
+- “Protect now” is available on intake and action-plan screens. Financial-fraud guidance adds 1930 only when that tag is confirmed. Official source URLs and wording caveats are documented in `../docs/evaluation-plan.md`.
+- The language selector changes the core questionnaire/protect-now strings and sets the default OCR language to English, Hindi or Telugu. Translations are drafts and require native-speaker review before release.
+- Run `npm test` for parser, exhibit numbering/strength labels, evidence append, timeline, questionnaire, redaction, route and Protect now tests.

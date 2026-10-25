@@ -2,13 +2,14 @@ export function uid(prefix = 'id') {
   return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-// Strip only a timestamp at the end of a crop OCR result; preserve all other wording.
+// Preserve the trailing clock time as metadata instead of silently discarding it.
 export function stripTrailingTime(input = '') {
-  return String(input)
-    .replace(/^\s*\d{1,2}:\d{2}(?:\s?[ap]\.?m\.?)?\s*$/i, '')
-    .replace(/[\s\u00a0]+(?:Today|Yesterday),?\s+\d{1,2}:\d{2}(?:\s?[ap]\.?m\.?)?\s*$/i, '')
-    .replace(/[\s\u00a0]+(?:\(|\[)?\d{1,2}:\d{2}(?:\s?[ap]\.?m\.?)?(?:\)|\])?\s*$/i, '')
-    .trim();
+  const original = String(input).replace(/[\s\u00a0]+$/g, '');
+  const match = original.match(/(?:^|[\s\u00a0])((?:Today|Yesterday),?\s+)?(\d{1,2}:\d{2}(?:\s?[ap]\.?m\.?)?)\s*$/i);
+  if (!match) return { text: original.trim(), time: '' };
+  const time = match[2].replace(/\s+/g, ' ').trim();
+  const text = original.slice(0, match.index).trim().replace(/[|·•—–-]+$/g, '').trim();
+  return { text, time };
 }
 
 // This parser is for text/chat exports only. Never pass screenshot OCR output here.

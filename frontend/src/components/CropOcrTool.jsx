@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createWorker } from 'tesseract.js';
 import { Check, Crop, Languages, ScanLine, Sparkles, X } from 'lucide-react';
 import { uid, stripTrailingTime } from '../lib/chatParser.js';
+import { sha256 } from '../lib/fileIntegrity.js';
 import { detectBubbleCandidates } from '../lib/bubbleDetection.js';
 
 const LANGUAGES = [
@@ -12,7 +13,7 @@ const LANGUAGES = [
   { value: 'eng+tel', label: 'English + Telugu' },
 ];
 
-export default function CropOcrTool({ item, onMessage, onClose }) {
+export default function CropOcrTool({ item, onMessage, onClose, preferredOcrLanguage = 'eng' }) {
   const imageRef = useRef(null);
   const displayRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: item.imageWidth || 0, height: item.imageHeight || 0 });
@@ -20,12 +21,15 @@ export default function CropOcrTool({ item, onMessage, onClose }) {
   const [pointerStart, setPointerStart] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [side, setSide] = useState('them');
-  const [language, setLanguage] = useState('eng');
+  const [language, setLanguage] = useState(preferredOcrLanguage);
+  const [screenshotDate, setScreenshotDate] = useState('');
   const [mode, setMode] = useState('manual');
   const [candidates, setCandidates] = useState([]);
   const [status, setStatus] = useState('Draw a box around one message, then run OCR on that crop.');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => { setLanguage(preferredOcrLanguage); }, [preferredOcrLanguage]);
 
   useEffect(() => {
     const image = imageRef.current;
@@ -111,13 +115,16 @@ export default function CropOcrTool({ item, onMessage, onClose }) {
         logger: (message) => { if (message.status === 'recognizing text') setStatus(`Reading crop… ${Math.round((message.progress || 0) * 100)}%`); },
       });
       const result = await worker.recognize(crop);
-      const text = stripTrailingTime(result?.data?.text || '');
+      const cleaned = stripTrailingTime(result?.data?.text || '');
+      const text = cleaned.text;
       if (!text) throw new Error('No readable text in this crop. Make the box tighter or try a sharper image.');
       const exactBox = { x0: x, y0: y, x1: x + width, y1: y + height };
+      const cropBlob = await new Promise((resolve, reject) => crop.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Could not create the exhibit crop.')), 'image/png'));
+      const cropHash = await sha256(cropBlob);
       onMessage({
-        id: uid('msg'), time: '', sender: side === 'me' ? 'Me' : 'Other person', text,
-        verified: false, sourceType: 'ocr_crop', evidenceId: item.id, sourceBox: exactBox,
-        sourceImageName: item.name, side,
+        id: uid('msg'), time: cleaned.time, screenshotDate, sender: side === 'me' ? 'Me' : 'Other person', text,
+        verified: false, sourceType: 'ocr_crop', evidenceStrength: 'screenshot_crop', captureMethod: 'manual_crop', evidenceId: item.id, sourceBox: exactBox,
+        sourceImageName: item.name, sourceFileHash: item.hash, cropHash, cropDataUrl: crop.toDataURL('image/png'), side,
       });
       setStatus('Crop added to the transcript. Draw another box to add the next message.');
       setSelection(null);
@@ -172,16 +179,19 @@ export default function CropOcrTool({ item, onMessage, onClose }) {
           const context = crop.getContext('2d');
           context.drawImage(img, x, y, width, height, 0, 0, width, height);
           const result = await worker.recognize(crop);
-          const text = stripTrailingTime(result?.data?.text || '');
+          const cleaned = stripTrailingTime(result?.data?.text || '');
+          const text = cleaned.text;
           if (!text) {
             failed += 1;
             continue;
           }
           const sourceBox = { x0: x, y0: y, x1: x + width, y1: y + height };
+          const cropBlob = await new Promise((resolve, reject) => crop.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Could not create exhibit crop.')), 'image/png'));
+          const cropHash = await sha256(cropBlob);
           onMessage({
-            id: uid('msg'), time: '', sender: candidate.side === 'me' ? 'Me' : 'Other person', text,
-            verified: false, sourceType: 'ocr_crop', evidenceId: item.id, sourceBox,
-            sourceImageName: item.name, side: candidate.side,
+            id: uid('msg'), time: cleaned.time, screenshotDate, sender: candidate.side === 'me' ? 'Me' : 'Other person', text,
+            verified: false, sourceType: 'ocr_crop', evidenceStrength: 'screenshot_crop', captureMethod: 'auto_crop', evidenceId: item.id, sourceBox,
+            sourceImageName: item.name, sourceFileHash: item.hash, cropHash, cropDataUrl: crop.toDataURL('image/png'), side: candidate.side,
           });
           processedBoxes.push(candidate);
           added += 1;
@@ -212,6 +222,7 @@ export default function CropOcrTool({ item, onMessage, onClose }) {
     <section className="crop-modal" role="dialog" aria-modal="true" aria-labelledby="crop-title">
       <header className="crop-modal-head"><div><span className="eyebrow">SCREENSHOT OCR</span><h2 id="crop-title">Select one message</h2><p>OCR only reads the box you choose. The screenshot remains in this browser.</p></div><button className="icon-button" onClick={onClose} aria-label="Close crop tool" disabled={busy}><X size={16}/></button></header>
       <div className="crop-toolbar"><div className="crop-mode-switch"><button className={mode === 'manual' ? 'active' : ''} onClick={() => { setMode('manual'); setSelection(null); }}>Draw box</button><button className={mode === 'auto' ? 'active' : ''} onClick={detectAutoBubbles} disabled={busy}><Sparkles size={13}/> Auto-detect · beta</button></div><label className="crop-language"><Languages size={14}/><span>OCR language</span><select value={language} onChange={(e) => setLanguage(e.target.value)} disabled={busy}>{LANGUAGES.map((lang) => <option value={lang.value} key={lang.value}>{lang.label}</option>)}</select></label></div>
+      <div className="crop-date-row"><label>Screenshot date (if known)<input type="date" value={screenshotDate} onChange={(e) => setScreenshotDate(e.target.value)} disabled={busy}/></label><small>Used with the extracted clock time to order the timeline. Leave today only if that is correct.</small></div>
       <div className="crop-role-row"><span>Whose message is this?</span><div className="segmented-control"><button className={side === 'them' ? 'active' : ''} onClick={() => setSide('them')} disabled={busy}>Other person · left</button><button className={side === 'me' ? 'active' : ''} onClick={() => setSide('me')} disabled={busy}>Me · right</button></div></div>
       <div className="crop-image-scroll"><div className="crop-image-wrap" ref={displayRef}>
         <img ref={imageRef} src={item.url} alt={`Select message area from ${item.name}`} onLoad={(event) => setDimensions({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })} draggable="false" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} className={mode === 'manual' ? 'crop-draw-active' : ''}/>

@@ -19,6 +19,14 @@ export function appendOcrSegment(evidenceItems, newMessage) {
         text: newMessage.text,
         sourceBox: newMessage.sourceBox,
         side: newMessage.side,
+        time: newMessage.time || '',
+        screenshotDate: newMessage.screenshotDate || '',
+        exhibitNumber: newMessage.exhibitNumber || '',
+        cropHash: newMessage.cropHash || '',
+        cropDataUrl: newMessage.cropDataUrl || '',
+        sourceFileHash: newMessage.sourceFileHash || item.hash || '',
+        captureMethod: newMessage.captureMethod || 'crop OCR',
+        evidenceStrength: newMessage.evidenceStrength || 'screenshot_crop',
       }],
     };
   });

@@ -19,3 +19,19 @@ test('OCR provenance segment is appended to matching image and remains idempoten
   const twice = appendOcrSegment(once, crop);
   assert.equal(twice[0].ocrSegments.length, 2);
 });
+
+test('stored exhibit segment keeps the crop hash, date, and exhibit number', () => {
+  const source = [{ id: 'image-2', kind: 'image', hash: 'a'.repeat(64), ocrSegments: [] }];
+  const crop = {
+    id: 'ocr-2', evidenceId: 'image-2', text: 'hello', side: 'me', time: '6:12 PM', screenshotDate: '2026-10-24',
+    exhibitNumber: 'A-1', cropHash: 'b'.repeat(64), cropDataUrl: 'data:image/png;base64,AA==', captureMethod: 'manual_crop',
+    sourceBox: { x0: 10, y0: 20, x1: 100, y1: 80 }, evidenceStrength: 'screenshot_crop',
+  };
+  const next = appendOcrSegment(source, crop);
+  const segment = next[0].ocrSegments[0];
+  assert.equal(segment.exhibitNumber, 'A-1');
+  assert.equal(segment.cropHash, 'b'.repeat(64));
+  assert.equal(segment.sourceFileHash, 'a'.repeat(64));
+  assert.equal(segment.screenshotDate, '2026-10-24');
+  assert.deepEqual(segment.sourceBox, crop.sourceBox);
+});
