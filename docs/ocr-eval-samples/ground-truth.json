@@ -1,0 +1,142 @@
+[
+  {
+    "file": "01_light_en.png",
+    "theme": "light",
+    "language": "en",
+    "target_message": "I will share your private photo unless you pay.",
+    "target_box": {
+      "x0": 123,
+      "y0": 345,
+      "x1": 688,
+      "y1": 426
+    },
+    "expected_transcript": "I will share your private photo unless you pay.",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  },
+  {
+    "file": "02_light_en.png",
+    "theme": "light",
+    "language": "en",
+    "target_message": "You have one hour to pay me.",
+    "target_box": {
+      "x0": 302,
+      "y0": 340,
+      "x1": 688,
+      "y1": 421
+    },
+    "expected_transcript": "You have one hour to pay me.",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  },
+  {
+    "file": "03_dark_en.png",
+    "theme": "dark",
+    "language": "en",
+    "target_message": "I will post the pictures tomorrow.",
+    "target_box": {
+      "x0": 32,
+      "y0": 461,
+      "x1": 449,
+      "y1": 542
+    },
+    "expected_transcript": "I will post the pictures tomorrow.",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  },
+  {
+    "file": "04_dark_en.png",
+    "theme": "dark",
+    "language": "en",
+    "target_message": "I know where you study.",
+    "target_box": {
+      "x0": 365,
+      "y0": 340,
+      "x1": 688,
+      "y1": 421
+    },
+    "expected_transcript": "I know where you study.",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  },
+  {
+    "file": "05_lowres_en.png",
+    "theme": "lowres",
+    "language": "en",
+    "target_message": "Pay ₹5000 or I will post it.",
+    "target_box": {
+      "x0": 174,
+      "y0": 173,
+      "x1": 344,
+      "y1": 215
+    },
+    "expected_transcript": "Pay ₹5000 or I will post it.",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  },
+  {
+    "file": "06_lowres_en.png",
+    "theme": "lowres",
+    "language": "en",
+    "target_message": "I will keep contacting you.",
+    "target_box": {
+      "x0": 173,
+      "y0": 173,
+      "x1": 344,
+      "y1": 215
+    },
+    "expected_transcript": "I will keep contacting you.",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  },
+  {
+    "file": "07_hindi.png",
+    "theme": "light",
+    "language": "hi",
+    "target_message": "मैं आपकी निजी तस्वीरें साझा कर दूँगा।",
+    "target_box": {
+      "x0": 313,
+      "y0": 351,
+      "x1": 688,
+      "y1": 437
+    },
+    "expected_transcript": "मैं आपकी निजी तस्वीरें साझा कर दूँगा।",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  },
+  {
+    "file": "08_hindi.png",
+    "theme": "dark",
+    "language": "hi",
+    "target_message": "पैसे भेजो वरना तस्वीरें डाल दूँगा।",
+    "target_box": {
+      "x0": 365,
+      "y0": 351,
+      "x1": 688,
+      "y1": 437
+    },
+    "expected_transcript": "पैसे भेजो वरना तस्वीरें डाल दूँगा।",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  },
+  {
+    "file": "09_telugu.png",
+    "theme": "light",
+    "language": "te",
+    "target_message": "డబ్బు పంపకపోతే ఫోటోలు పంచుతాను.",
+    "target_box": {
+      "x0": 278,
+      "y0": 343,
+      "x1": 688,
+      "y1": 431
+    },
+    "expected_transcript": "డబ్బు పంపకపోతే ఫోటోలు పంచుతాను.",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  },
+  {
+    "file": "10_telugu.png",
+    "theme": "dark",
+    "language": "te",
+    "target_message": "మీ ఫోటోలను అందరికీ పంపిస్తాను.",
+    "target_box": {
+      "x0": 327,
+      "y0": 350,
+      "x1": 688,
+      "y1": 437
+    },
+    "expected_transcript": "మీ ఫోటోలను అందరికీ పంపిస్తాను.",
+    "notes": "Synthetic sample. Crop only the target bubble; compare OCR against expected_transcript."
+  }
+]
