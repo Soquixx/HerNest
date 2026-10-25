@@ -1,6 +1,6 @@
 import React from 'react';
 import { ShieldCheck, ExternalLink } from 'lucide-react';
-import { getProtectNowItems } from '../lib/protectNow.js';
+import { getProtectNowItems } from './lib/protectNow.js';
 import { t } from '../lib/i18n.js';
 
 export default function ProtectNow({ tags = new Set(), language = 'en', compact = false }) {
