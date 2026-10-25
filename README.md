@@ -45,3 +45,5 @@ A usability test protocol for 3–5 students is in `docs/usability-test-script.m
 - Reporting routes are selected by confirmed tags and explicit immediate-danger input. Legal sections are not auto-assigned.
 - Quick exit needs confirmation / two Escape presses and clearly notes it cannot erase external copies, browser history, downloads, or screenshots.
 - The API's in-memory rate limit is only for a single prototype process; use a shared or edge limiter before public launch.
+# HerNest
+your evidence.your voice.your next step
