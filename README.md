@@ -14,9 +14,9 @@ Built for **recHERsion 2026 - Problem Statement 2: Women’s Safety**, organised
 
 ## Demo
 
-- **Live application:** `https://her-nest-chi.vercel.app/`
-- **Backend health:** `https://hernest-ojtr.onrender.com/health`
-- **Demo walkthrough (41 seconds):** [ HerNest Demo ](frontend/public/assets/hernest-walkthrough.mp4)
+- **Live application:**  ***https://her-nest-chi.vercel.app/***
+- **Backend health:**  ***https://hernest-ojtr.onrender.com/health***
+- **Demo walkthrough (41 seconds):**  ***[ HerNest Demo ](frontend/public/assets/hernest-walkthrough.mp4)***
 - **Team:** `LEO`
 
 The walkthrough video is included in the repository at `frontend/public/assets/hernest-walkthrough.mp4`.
@@ -47,7 +47,7 @@ Import evidence → Review and correct → Confirm facts → Get an action plan 
 - **Refusal marker and timeline:** Mark the message where contact was refused. The timeline counts reviewed messages from the other person after that point and presents the sequence neutrally, without making a legal conclusion.
 - **Guided questionnaire:** Facts are confirmed by the user and linked to source messages rather than inferred from keyword matches on real evidence.
 - **Contextual reporting routes:** Routes are shown according to confirmed information and the user's selection of immediate physical danger.
-- **Protect Now:** Practical guidance for preserving evidence, securing accounts, avoiding pressured payments and not forwarding intimate images—especially images involving minors.
+- **Protect Now:** Practical guidance for preserving evidence, securing accounts, avoiding pressured payments and not forwarding intimate images-especially images involving minors.
 - **Quick exit:** A two-press `Esc` shortcut or the on-screen action clears the in-memory case and shows a neutral screen. It cannot erase browser history, downloads or external copies.
 - **English, Hindi and Telugu interface:** Core screens support all three languages.
 - **Optional synthetic-data AI demo:** A FastAPI endpoint can request structured suggestions from Gemini for explicitly submitted fictional text. If the provider is unavailable or no key is configured, a rule-based fallback responds instead.
@@ -202,7 +202,7 @@ The AI endpoint is for synthetic demo conversations only. Do not submit real pri
 - **Framework preset:** Vite
 - **Build command:** `npm run build`
 - **Output directory:** `dist`
-- **Environment variable:** `VITE_API_BASE_URL=https://hernest-ojtr.onrender.com`
+- **Environment variable:** `VITE_API_BASE_URL = https://hernest-ojtr.onrender.com`
 
 `VITE_API_BASE_URL` is embedded at build time. Redeploy the frontend after changing it.
 
@@ -262,5 +262,5 @@ HerNest uses React, Vite, lucide-react, Tesseract.js and its OCR language data, 
 ---
 
 <p align="center">
-  <strong>HerNest - Your evidence. Your voice. Your next step.</strong>
+  <strong>HerNest - Your evidence. Your voice. Your next step 🖤.</strong>
 </p>
